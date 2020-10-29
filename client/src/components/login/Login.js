@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import { Link, useHistory } from 'react-router-dom';
@@ -8,6 +8,8 @@ import API from "../../axios";
 
 const Login = () => {
     const initValues = {email:'',password:''};
+    
+    const [isRevealPassword, setIsRevealPassword] = useState(false);
     const validationSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Required'),
         password: Yup.string().required("Required")
@@ -24,6 +26,10 @@ const Login = () => {
             }).then(() => history.push('/dashboard')); 
         }
     },[]);
+
+    const togglePassword = () => {
+        setIsRevealPassword(!isRevealPassword);
+    }
 
     const handleFormSubmit = async values => {
         const {email, password} = values;
@@ -62,9 +68,10 @@ const Login = () => {
                                 <Field autoComplete="none" className={inputClassNames} name="email" id="email" />
                                 {touched.email && errors.email ? <p className="text-danger" >{errors.email}</p> : null}
                             </div>
-                            <div className="form-group">
+                            <div className="form-group position-relative">
                                 <label className={labelClassNames} htmlFor="password">Password</label>
-                                <Field autoComplete="none" type="password" className={inputClassNames} name="password" id="password" />
+                                <Field autoComplete="none" type={isRevealPassword ? "text" : "password"} className={inputClassNames} name="password" id="password" />
+                                <span style={{'right':'0','top':'32px'}} type="button" className="btn btn-secondary position-absolute" onClick={togglePassword}>{isRevealPassword ? "Hide" : "Show"}</span>
                                 {touched.password && errors.password ? <p className="text-danger" >{errors.password}</p> : null}
                             </div>
                             <div className="col-md-12 mt-3">

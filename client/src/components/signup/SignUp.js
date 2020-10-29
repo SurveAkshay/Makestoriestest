@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { Link, useHistory } from 'react-router-dom';
 import swal from 'sweetalert';
@@ -11,7 +11,9 @@ const SignUp = () => {
     const [photoUrl,setPhotoUrl] = useState('');
     const [imgError,setImageError] = useState('');
     const [photoName,setPhotoName] = useState('Upload Profile Picture');
-
+    const [isRevealPassword, setIsRevealPassword] = useState(false);
+    const password_ref = useRef(null);
+    const confirm_password_ref = useRef(null);
     useEffect(() => {
         const token = localStorage.getItem('token');
         if(token) {
@@ -22,6 +24,9 @@ const SignUp = () => {
         }
     },[]);
 
+    const togglePassword = () => {
+        setIsRevealPassword(!isRevealPassword);
+    }
     let history = useHistory(); 
     const inputClassNames='form-control', labelClassNames='';
     const SUPPORTED_FORMATS = ["jpg", "jpeg", "png"];
@@ -151,14 +156,15 @@ const SignUp = () => {
                                 <Field autoComplete="none"  className={inputClassNames} name="phone" id="phone" />
                                 {touched.phone && errors.phone ? <p className="text-danger" >{errors.phone}</p> : null}
                             </div>
-                            <div className="form-group col-md-6">
+                            <div className="form-group  position-relative col-md-6">
                                 <label className={labelClassNames} htmlFor="password">Password</label>
-                                <Field autoComplete="none" type="password" className={inputClassNames} name="password" id="password" />
+                                <Field autoComplete="none" ref={password_ref} type={isRevealPassword ? "text" : "password"} className={inputClassNames} name="password" id="password" />
+                                <span style={{'right':'0','top':'32px'}} type="button" className="btn btn-secondary position-absolute" onClick={togglePassword}>{isRevealPassword ? "Hide" : "Show"}</span>
                                 {touched.password && errors.password ? <p className="text-danger" >{errors.password}</p> : null}
                             </div>
                             <div className="form-group col-md-6">
                                 <label className={labelClassNames} htmlFor="confirm_password">Confirm Password</label>
-                                <Field autoComplete="none" type="password" className={inputClassNames} name="confirm_password" id="confirm_password" />
+                                <Field autoComplete="none" ref={confirm_password_ref} type={isRevealPassword ? "text" : "password"} className={inputClassNames} name="confirm_password" id="confirm_password" />
                                 {touched.confirm_password && errors.confirm_password ? <p className="text-danger" >{errors.confirm_password}</p> : null}
                             </div>
                             <div className="form-group col-md-12">
